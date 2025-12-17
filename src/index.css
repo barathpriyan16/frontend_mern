@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --onero-primary: #6366f1;
+  --onero-secondary: #8b5cf6;
+  --onero-accent: #06b6d4;
+  --onero-dark: #0f172a;
+  --onero-light: #f8fafc;
+}
+
+/* Onero theme utilities */
+.bg-glass {
+  background: rgba(99, 102, 241, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.onero-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+}
+
+.onero-card {
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+}
+
+.dark .onero-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+/* body background for Onero theme */
+body {
+  @apply bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100;
+  background-image: radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+}
+
+/* Remove Recharts background bar highlight */
+.recharts-bar-rectangle-background {
+  display: none !important;
+}
