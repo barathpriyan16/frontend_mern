@@ -17,11 +17,28 @@ export function AuthProvider({ children }) {
       // ignore errors
     }
     setIsLoading(false)
+
+    // Listen for user updates from other components
+    const handleUserUpdate = (event) => {
+      setUser(event.detail)
+    }
+
+    window.addEventListener('userUpdated', handleUserUpdate)
+    return () => window.removeEventListener('userUpdated', handleUserUpdate)
   }, [])
 
   const login = (userData) => {
     setUser(userData)
     localStorage.setItem('etp_user', JSON.stringify(userData))
+    // Trigger storage event for other components to update
+    window.dispatchEvent(new Event('storage'))
+  }
+
+  const updateUser = (userData) => {
+    const updatedUser = { ...user, ...userData }
+    setUser(updatedUser)
+    localStorage.setItem('etp_user', JSON.stringify(updatedUser))
+    window.dispatchEvent(new Event('storage'))
   }
 
   const logout = () => {
@@ -30,7 +47,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   )

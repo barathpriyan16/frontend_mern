@@ -44,18 +44,39 @@ export function ExpenseProvider({ children }){
 
   // Sync profile with auth user data
   React.useEffect(() => {
-    const user = getCurrentUser()
-    if (user) {
-      setProfile({
-        name: user.name || defaultProfile.name,
-        email: user.email || defaultProfile.email,
-        profileImage: null,
-        budget: user.budget || defaultProfile.budget,
-        currency: user.currency || defaultProfile.currency
-      })
-      loadExpenses()
+    const syncProfile = () => {
+      const user = getCurrentUser()
+      if (user) {
+        setProfile({
+          name: user.name || defaultProfile.name,
+          email: user.email || defaultProfile.email,
+          profileImage: user.profileImage || null,
+          budget: user.budget || defaultProfile.budget,
+          currency: user.currency || defaultProfile.currency
+        })
+        loadExpenses()
+      } else {
+        setProfile(defaultProfile)
+        setExpenses([])
+      }
     }
-  }, [])
+
+    // Initial sync
+    syncProfile()
+
+    // Listen for user updates
+    const handleUserUpdate = (event) => {
+      syncProfile()
+    }
+
+    window.addEventListener('userUpdated', handleUserUpdate)
+    window.addEventListener('storage', syncProfile)
+    
+    return () => {
+      window.removeEventListener('userUpdated', handleUserUpdate)
+      window.removeEventListener('storage', syncProfile)
+    }
+  }, [loadExpenses])
 
   const addExpense = useCallback(async (expense) => {
     const user = getCurrentUser()
@@ -93,16 +114,19 @@ export function ExpenseProvider({ children }){
   }, [])
 
   const updateProfile = useCallback(async (updates) => {
-    const user = getCurrentUser()
-    if (!user?._id) return
+    const currentUser = getCurrentUser()
+    if (!currentUser?._id) return
     
     try {
-      const response = await authAPI.updateUser(user._id, updates)
+      const response = await authAPI.updateUser(currentUser._id, updates)
       setProfile(prev => ({...prev, ...updates}))
       
       // Update localStorage with new user data
-      const updatedUser = { ...user, ...updates }
+      const updatedUser = { ...currentUser, ...updates }
       localStorage.setItem('etp_user', JSON.stringify(updatedUser))
+      
+      // Trigger custom event for auth context to update
+      window.dispatchEvent(new CustomEvent('userUpdated', { detail: updatedUser }))
       
       return response.user
     } catch (error) {

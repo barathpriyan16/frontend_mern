@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:4001/api';
-
+const API_BASE_URL = 'https://frontend-mern-hm3ffg3cf-barathpriyan-rs-projects.vercel.app/'
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
