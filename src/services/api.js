@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://frontend-mern-hm3ffg3cf-barathpriyan-rs-projects.vercel.app/'
+// Use an environment variable with a fallback for local dev
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+// Example fetch call
+const res = await fetch(`${API_BASE_URL}/api/register`, { ... });
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
